@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Components */
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-isa-500 to-isa-600 text-white px-6 py-3 rounded-lg font-medium hover:from-isa-600 hover:to-isa-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-isa-600 border border-isa-300 px-6 py-3 rounded-lg font-medium hover:bg-isa-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-export {
+    @apply bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-lg p-6 border border-gray-100;
+  }
+
+  .card-dark {
+    @apply bg-atmosphere-800 rounded-xl shadow-lg p-6 border border-atmosphere-700;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-isa-500 focus:border-isa-500 transition-colors duration-200;
+  }
+
+  .section-header {
+    @apply bg-gradient-to-r from-atmosphere-900 to-atmosphere-800 text-white p-8 text-center;
+  }
+
+  .result-card {
+    @apply bg-gray-50 p-6 rounded-lg border border-gray-200;
+  }
+
+  .summary-card {
+    @apply bg-gradient-to-r from-isa-500 to-isa-600 text-white p-6 rounded-lg text-center;
+  }
+
+  .summary-card-optimal {
+    @apply bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-6 rounded-lg text-center;
+  }
+
+  .preset-button {
+    @apply bg-white border border-gray-300 rounded-lg p-4 text-left hover:border-isa-500 hover:bg-isa-50 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+
+  .tab-button {
+    @apply px-6 py-3 bg-white rounded-lg font-medium transition-all duration-200 hover:bg-gray-100;
+  }
+
+  .tab-button-active {
+    @apply px-6 py-3 bg-isa-500 text-white rounded-lg font-medium;
+  }
+
+  .error-message {
+    @apply bg-red-50 text-red-700 p-4 rounded-lg border border-red-200;
+  }
+
+  .success-text {
+    @apply text-emerald-600 font-semibold;
+  }
+
+  .warning-text {
+    @apply text-orange-600 font-semibold;
+  }
+
+  .error-text {
+    @apply text-red-600 font-semibold;
+  }
+
+  .loading-spinner {
+    @apply inline-flex items-center gap-2;
+  }
+
+  .spinner {
+    @apply w-5 h-5 border-2 border-gray-200 border-t-isa-500 rounded-full animate-spin;
+  }
+
+  .progress-bar {
+    @apply w-full h-1 bg-gray-200 rounded-full overflow-hidden my-4;
+  }
+
+  .progress-fill {
+    @apply h-full bg-gradient-to-r from-isa-500 to-isa-600 rounded-full animate-progress;
+  }
+
+  .tooltip-container {
+    @apply relative inline-block;
+  }
+
+  .tooltip-trigger {
+    @apply inline-flex items-center gap-1 cursor-help text-isa-600 font-semibold border-b border-dotted border-isa-400;
+  }
+
+  .tooltip-trigger::after {
+    content: '?';
+    @apply inline-block w-4 h-4 bg-isa-500 text-white rounded-full text-xs text-center leading-4 font-bold;
+  }
+
+  .tooltip-content {
+    @apply absolute z-50 bg-gray-800 text-white p-3 rounded-lg text-sm max-w-xs shadow-lg;
+  }
+
+  .tooltip-top {
+    @apply bottom-full left-1/2 transform -translate-x-1/2 mb-2;
+  }
+
+  .tooltip-bottom {
+    @apply top-full left-1/2 transform -translate-x-1/2 mt-2;
+  }
+
+  .tooltip-left {
+    @apply right-full top-1/2 transform -translate-y-1/2 mr-2;
+  }
+
+  .tooltip-right {
+    @apply left-full top-1/2 transform -translate-y-1/2 ml-2;
+  }
+
+  .chart-header {
+    @apply flex justify-between items-center mb-4;
+  }
+
+  .chart-section {
+    @apply my-8;
+  }
+
+  .preset-scenarios {
+    @apply bg-gray-50 p-6 rounded-lg my-6;
+  }
+
+  .preset-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3;
+  }
+
+  .insights-box {
+    @apply bg-blue-50 border-l-4 border-blue-400 p-6 my-8 rounded-r-lg;
+  }
+
+  .help-icon {
+    @apply inline-flex items-center gap-2 ml-2;
+  }
+}
+
+/* Custom animations */
+@keyframes progress {
+  0% { width: 0%; }
+  50% { width: 70%; }
+  100% { width: 100%; }
+}
+
+/* Responsive overrides */
+@media (max-width: 768px) {
+  .preset-grid {
+    @apply grid-cols-1 gap-2;
+  }
+  
+  .chart-header {
+    @apply flex-col items-start gap-2;
+  }
+  
+  .btn-export {
+    @apply self-end text-xs px-3 py-2;
+  }
+}
+
+@media (max-width: 480px) {
+  .tooltip-trigger::after {
+    @apply w-3.5 h-3.5 text-[10px] leading-3.5;
+  }
+}
