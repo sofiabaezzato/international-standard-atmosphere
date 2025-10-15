@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import axios from 'axios'
-import HelpTooltip from './HelpTooltip'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faInfoCircle, faCheck, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
+import HelpPopup from './HelpPopup'
 
 export default function ISACalculator() {
   const [altitude, setAltitude] = useState('')
@@ -61,19 +63,19 @@ export default function ISACalculator() {
 
   return (
     <div className="card">
-      <h2 className="text-3xl font-bold text-gray-800 mb-2 flex items-center">
+      <h2 className="text-3xl font-bold text-gray-50 mb-2 flex items-center">
         ISA Calculator
-        <HelpTooltip 
+        <HelpPopup 
           content="The International Standard Atmosphere (ISA) is a mathematical model defining atmospheric conditions from sea level to 86 km altitude. It uses 8 atmospheric layers with different temperature profiles to provide accurate pressure, density, and temperature calculations."
-          position="bottom"
+          title="International Standard Atmosphere (ISA)"
         >
-          <span className="help-icon">ℹ️</span>
-        </HelpTooltip>
+          <FontAwesomeIcon icon={faInfoCircle} className="text-isa-600 ml-2" size="2xs" />
+        </HelpPopup>
       </h2>
-      <p className="text-gray-600 mb-6">Calculate atmospheric parameters at any altitude using the International Standard Atmosphere model</p>
+      <p className="text-gray-400 mb-6">Calculate atmospheric parameters at any altitude using the International Standard Atmosphere model</p>
       
       <div className="preset-scenarios">
-        <h4 className="text-lg font-semibold text-gray-700 mb-4">🏔️ Common Altitudes</h4>
+        <h4 className="text-lg font-semibold text-gray-50 mb-4">Common Altitudes</h4>
         <div className="preset-grid">
           {commonAltitudes.map((alt, idx) => (
             <button 
@@ -89,9 +91,9 @@ export default function ISACalculator() {
         </div>
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-4 max-w-sm mx-auto">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-gray-200 mb-2">
             Altitude (meters):
           </label>
           <input 
@@ -134,18 +136,18 @@ export default function ISACalculator() {
 
       {results && (
         <div className="mt-8">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">Results at {(results.isa.geometric_altitude / 1000).toFixed(2)} km</h3>
+          <h3 className="text-2xl font-bold text-gray-50 mb-6">Results at {(results.isa.geometric_altitude / 1000).toFixed(2)} km</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="result-card">
               <h4 className="text-lg font-semibold text-isa-600 mb-3 flex items-center">
                 Altitude
-                <HelpTooltip 
+                <HelpPopup 
                   content="Geometric altitude is the actual height above Earth's surface. Geopotential altitude accounts for Earth's curvature and gravity variations. The difference becomes significant at high altitudes."
-                  position="right"
+                  title="Altitude Types"
                 >
-                  <span className="help-icon">ℹ️</span>
-                </HelpTooltip>
+                  <FontAwesomeIcon icon={faInfoCircle} className="text-isa-600" />
+                </HelpPopup>
               </h4>
               <div className="space-y-2 text-sm">
                 <p><span className="font-semibold">Geometric:</span> {results.isa.geometric_altitude.toFixed(2)} m</p>
@@ -193,12 +195,12 @@ export default function ISACalculator() {
             <div className="result-card">
               <h4 className="text-lg font-semibold text-isa-600 mb-3 flex items-center">
                 Exponential Model (β=8000m)
-                <HelpTooltip 
+                <HelpPopup 
                   content="The exponential model simplifies the atmosphere as P(h) = P₀ × e^(-h/β), where β=8000m is the standard scale height. This is simpler than ISA but less accurate, especially at high altitudes or in regions with temperature inversions."
-                  position="left"
+                  title="Exponential Atmosphere Model"
                 >
-                  <span className="help-icon">ℹ️</span>
-                </HelpTooltip>
+                  <FontAwesomeIcon icon={faInfoCircle} className="text-isa-600" />
+                </HelpPopup>
               </h4>
               <div className="space-y-2 text-sm">
                 <p><span className="font-semibold">Pressure:</span> {results.exponential_comparison.pressure.toFixed(2)} Pa</p>
@@ -206,9 +208,9 @@ export default function ISACalculator() {
                   Error: {results.exponential_comparison.error_pct.toFixed(2)}%
                 </p>
                 {Math.abs(results.exponential_comparison.error_pct) < 5 ? (
-                  <p className="success-text">✓ Simple model is accurate here!</p>
+                  <p className="success-text"><FontAwesomeIcon icon={faCheck} className="mr-2" />Simple model is accurate here!</p>
                 ) : (
-                  <p className="warning-text">⚠ Use ISA for precision</p>
+                  <p className="warning-text"><FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />Use ISA for precision</p>
                 )}
               </div>
             </div>

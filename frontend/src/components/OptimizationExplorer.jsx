@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import axios from 'axios'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import HelpTooltip from './HelpTooltip'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faInfoCircle, faDownload, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import HelpPopup from './HelpPopup'
 
 export default function OptimizationExplorer() {
   const [minAlt, setMinAlt] = useState('0')
@@ -9,6 +11,7 @@ export default function OptimizationExplorer() {
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [showAllRows, setShowAllRows] = useState(false)
 
   const presetScenarios = [
     { name: 'Troposphere (0-12km)', min: 0, max: 12000, description: 'Commercial aviation altitudes' },
@@ -61,6 +64,28 @@ export default function OptimizationExplorer() {
     setResults(null)
   }
 
+  const getDisplayRows = () => {
+    if (!results || !results.comparisons) return []
+    
+    if (showAllRows) {
+      return results.comparisons
+    } else {
+      // Show only first, middle, and last rows
+      const comparisons = results.comparisons
+      if (comparisons.length <= 3) return comparisons
+      
+      const firstIdx = 0
+      const lastIdx = comparisons.length - 1
+      const middleIdx = Math.floor(comparisons.length / 2)
+      
+      return [
+        comparisons[firstIdx],
+        comparisons[middleIdx], 
+        comparisons[lastIdx]
+      ]
+    }
+  }
+
   const exportChartData = () => {
     if (!results) return
     
@@ -87,19 +112,19 @@ export default function OptimizationExplorer() {
 
   return (
     <div className="card">
-      <h2 className="text-3xl font-bold text-gray-800 mb-2 flex items-center">
+      <h2 className="text-3xl font-bold text-gray-50 mb-2 flex items-center">
         Optimization Explorer
-        <HelpTooltip 
+        <HelpPopup 
           content="This tool finds the optimal scale height (β) parameter for the exponential atmosphere model that best fits the ISA model over your chosen altitude range. Different altitude ranges require different β values for best accuracy."
-          position="bottom"
+          title="Scale Height Optimization"
         >
-          <span className="help-icon">ℹ️</span>
-        </HelpTooltip>
+          <FontAwesomeIcon icon={faInfoCircle} className="text-isa-600 ml-2" size="2xs" />
+        </HelpPopup>
       </h2>
-      <p className="text-gray-600 mb-6">Find the optimal scale height (β) for your altitude range</p>
+      <p className="text-gray-400 mb-6">Find the optimal scale height (β) for your altitude range</p>
       
       <div className="preset-scenarios">
-        <h4 className="text-lg font-semibold text-gray-700 mb-4">📋 Common Scenarios</h4>
+        <h4 className="text-lg font-semibold text-gray-50 mb-4">Common Scenarios</h4>
         <div className="preset-grid">
           {presetScenarios.map((preset, idx) => (
             <button 
@@ -117,7 +142,7 @@ export default function OptimizationExplorer() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-gray-200 mb-2">
             Min Altitude (m):
           </label>
           <input 
@@ -134,7 +159,7 @@ export default function OptimizationExplorer() {
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <label className="block text-sm font-semibold text-gray-200 mb-2">
             Max Altitude (m):
           </label>
           <input 
@@ -171,16 +196,16 @@ export default function OptimizationExplorer() {
         <div className="results">
           <div className="optimization-summary">
             <h3>Optimization Results</h3>
-            <div className="summary-grid">
-              <div className="summary-card optimal">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="summary-card-optimal">
                 <h4>
                   Optimal Scale Height
-                  <HelpTooltip 
+                  <HelpPopup 
                     content="The scale height (β) determines how quickly pressure decreases with altitude in the exponential model. This optimized value minimizes the error between the exponential and ISA models for your chosen altitude range."
-                    position="top"
+                    title="Optimal Scale Height"
                   >
-                    <span className="help-icon">ℹ️</span>
-                  </HelpTooltip>
+                    <FontAwesomeIcon icon={faInfoCircle} className="text-white ml-2" size="xs"/>
+                  </HelpPopup>
                 </h4>
                 <p className="big-number">{results.optimization.optimal_beta.toFixed(0)} m</p>
                 <p className="small-text">Best fit for {results.optimization.altitude_range_km[0]}-{results.optimization.altitude_range_km[1]} km</p>
@@ -199,7 +224,27 @@ export default function OptimizationExplorer() {
           </div>
 
           <div className="comparison-table">
-            <h4>Comparison at Key Altitudes</h4>
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="text-lg font-semibold text-gray-200">Comparison at Key Altitudes</h4>
+              {results.comparisons.length > 3 && (
+                <button 
+                  onClick={() => setShowAllRows(!showAllRows)}
+                  className="text-sm text-white hover:text-isa-300 flex items-center gap-2 transition-colors"
+                >
+                  {showAllRows ? (
+                    <>
+                      <FontAwesomeIcon icon={faChevronUp}/>
+                      Show Less
+                    </>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon icon={faChevronDown} />
+                      Show All ({results.comparisons.length} points)
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
             <table>
               <thead>
                 <tr>
@@ -210,7 +255,7 @@ export default function OptimizationExplorer() {
                 </tr>
               </thead>
               <tbody>
-                {results.comparisons.map((comp, idx) => (
+                {getDisplayRows().map((comp, idx) => (
                   <tr key={idx}>
                     <td>{comp.altitude_km.toFixed(1)}</td>
                     <td>{comp.isa_pressure.toFixed(2)}</td>
@@ -233,26 +278,52 @@ export default function OptimizationExplorer() {
             ))}
           </div>
 
-          <div className="chart-container">
+          <div className="mt-8">
             <div className="chart-header">
-              <h4>Error Comparison</h4>
+              <h4 className="text-lg font-semibold text-gray-200">Error Comparison</h4>
               <button 
-                className="export-button"
+                className="btn-export"
                 onClick={exportChartData}
                 title="Export chart data as CSV"
               >
-                📊 Export CSV
+                <FontAwesomeIcon icon={faDownload} className="mr-2" />Export CSV
               </button>
             </div>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={results.comparisons}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="altitude_km" label={{ value: 'Altitude (km)', position: 'bottom' }} />
-                <YAxis label={{ value: 'Error (%)', angle: -90, position: 'insideLeft' }} />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="optimal_error_pct" stroke="#22c55e" name="Optimal β" strokeWidth={2} />
-                <Line type="monotone" dataKey="standard_error_pct" stroke="#ef4444" name="Standard β=8000m" strokeWidth={2} />
+                <CartesianGrid strokeDasharray="1 1" stroke="#374151" strokeOpacity={0.3} />
+                <XAxis 
+                  dataKey="altitude_km" 
+                  label={{ value: 'Altitude (km)', position: 'insideBottom', offset: -10 }}
+                  type="number"
+                  domain={['dataMin', 'dataMax']}
+                  tickFormatter={(value) => value.toFixed(0)}
+                />
+                <YAxis 
+                  label={{ value: 'Error (%)', angle: -90, position: 'insideLeft' }}
+                  tickFormatter={(value) => value.toFixed(1)}
+                />
+                <Tooltip 
+                  formatter={(value, name) => [value.toFixed(2) + '%', name]}
+                  labelFormatter={(value) => `Altitude: ${value.toFixed(1)} km`}
+                />
+                <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                <Line 
+                  type="monotone" 
+                  dataKey="optimal_error_pct" 
+                  stroke="#10b981" 
+                  name="Optimized β" 
+                  strokeWidth={1.5} 
+                  dot={false}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="standard_error_pct" 
+                  stroke="#ef4444" 
+                  name="Standard β=8000m" 
+                  strokeWidth={1.5} 
+                  dot={false}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>

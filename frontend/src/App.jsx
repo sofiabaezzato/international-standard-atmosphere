@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHeart } from '@fortawesome/free-solid-svg-icons'
 import ISACalculator from './components/ISACalculator'
 import OptimizationExplorer from './components/OptimizationExplorer'
 import VisualizationDashboard from './components/VisualizationDashboard'
@@ -9,50 +11,54 @@ function App() {
   const [activeTab, setActiveTab] = useState('calculator')
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <header className="section-header">
-        <h1 className="text-4xl font-bold mb-2">🌍 Interactive Atmosphere Model Learning Tool</h1>
-        <p className="text-lg opacity-90">Explore atmospheric modeling through interactive calculations and visualizations</p>
+    <div className="h-screen w-screen flex flex-col bg-atmosphere-900 overflow-hidden">
+      <header className="section-header flex-shrink-0">
+        <h1 className="text-3xl font-bold mb-2">Interactive Atmosphere Model Learning Tool</h1>
+        <p className="text-md opacity-90">Explore atmospheric modeling through interactive calculations and visualizations</p>
+          <nav className="mt-2 flex min-w-full">
+            <div className="w-full flex flex-wrap gap-2 items-center justify-items-center">
+              {/*<button*/}
+              {/*  className={activeTab === 'tutorial' ? 'tab-button-active' : 'tab-button'}*/}
+              {/*  onClick={() => setActiveTab('tutorial')}*/}
+              {/*>*/}
+              {/*  📚 Learn*/}
+              {/*</button>*/}
+              <button
+                className={activeTab === 'calculator' ? 'tab-button-active' : 'tab-button'}
+                onClick={() => setActiveTab('calculator')}
+              >
+                  Calculator
+              </button>
+              <button
+                className={activeTab === 'optimizer' ? 'tab-button-active' : 'tab-button'}
+                onClick={() => setActiveTab('optimizer')}
+              >
+                Optimizer
+              </button>
+              <button
+                className={activeTab === 'visualize' ? 'tab-button-active' : 'tab-button'}
+                onClick={() => setActiveTab('visualize')}
+              >
+                Visualize
+              </button>
+            </div>
+          </nav>
       </header>
 
-      <nav className="bg-gray-100 p-4 border-b-2 border-gray-200">
-        <div className="max-w-7xl mx-auto flex flex-wrap gap-2">
-          <button 
-            className={activeTab === 'tutorial' ? 'tab-button-active' : 'tab-button'} 
-            onClick={() => setActiveTab('tutorial')}
-          >
-            📚 Learn
-          </button>
-          <button 
-            className={activeTab === 'calculator' ? 'tab-button-active' : 'tab-button'} 
-            onClick={() => setActiveTab('calculator')}
-          >
-            🧮 Calculator
-          </button>
-          <button 
-            className={activeTab === 'optimizer' ? 'tab-button-active' : 'tab-button'} 
-            onClick={() => setActiveTab('optimizer')}
-          >
-            🔬 Optimizer
-          </button>
-          <button 
-            className={activeTab === 'visualize' ? 'tab-button-active' : 'tab-button'} 
-            onClick={() => setActiveTab('visualize')}
-          >
-            📊 Visualize
-          </button>
-        </div>
-      </nav>
 
-      <main className="flex-1 p-8 max-w-7xl mx-auto w-full">
-        {activeTab === 'tutorial' && <Tutorial />}
-        {activeTab === 'calculator' && <ISACalculator />}
-        {activeTab === 'optimizer' && <OptimizationExplorer />}
-        {activeTab === 'visualize' && <VisualizationDashboard />}
+      <main className="flex-1 overflow-auto p-4 w-full">
+        <div className="max-w-5xl mx-auto h-full">
+          {/*{activeTab === 'tutorial' && <Tutorial />}*/}
+          {activeTab === 'calculator' && <ISACalculator />}
+          {activeTab === 'optimizer' && <OptimizationExplorer />}
+          {activeTab === 'visualize' && <VisualizationDashboard />}
+        </div>
       </main>
 
-      <footer className="bg-gray-800 text-gray-400 p-4 text-center">
-        <p>Built with ISA (ISO 2533:1975) and exponential atmosphere models</p>
+      <footer className="bg-gray-900 text-gray-50 p-4 text-center flex-shrink-0 text-sm font-medium">
+          <p>built with <FontAwesomeIcon icon={faHeart} className="text-red-500 mx-1"/> by <a
+              href="https://www.linkedin.com/in/sofia-baezzato" target="_blank">sofia</a> & <a
+              href="https://www.claude.com/product/claude-code" target="_blank">claude</a></p>
       </footer>
     </div>
   )

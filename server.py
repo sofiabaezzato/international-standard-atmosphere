@@ -187,6 +187,7 @@ def generate_comparison_data(request: ComparisonRequest):
             
             isa_data.append({
                 "altitude_km": h / 1000,
+                "altitude_m": h,
                 "pressure": isa['pressure'],
                 "temperature": isa['temperature_K'],
                 "density": isa['density']
@@ -194,12 +195,14 @@ def generate_comparison_data(request: ComparisonRequest):
             
             exp_optimal_data.append({
                 "altitude_km": h / 1000,
+                "altitude_m": h,
                 "pressure": exp_opt['pressure'],
                 "density": exp_opt['density']
             })
             
             exp_standard_data.append({
                 "altitude_km": h / 1000,
+                "altitude_m": h,
                 "pressure": exp_std['pressure'],
                 "density": exp_std['density']
             })

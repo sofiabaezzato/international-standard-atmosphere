@@ -13,11 +13,11 @@
   }
 
   .btn-export {
-    @apply bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg;
+    @apply bg-gradient-to-r from-teal-500 to-teal-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-teal-600 hover:to-teal-700 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg;
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-lg p-6 border border-gray-100;
+    @apply bg-atmosphere-900 rounded-xl shadow-lg p-6 border border-atmosphere-800;
   }
 
   .card-dark {
@@ -29,7 +29,7 @@
   }
 
   .section-header {
-    @apply bg-gradient-to-r from-atmosphere-900 to-atmosphere-800 text-white p-8 text-center;
+    @apply bg-gradient-to-t from-atmosphere-900 to-atmosphere-800 text-white px-8 py-6 text-center;
   }
 
   .result-card {
@@ -37,11 +37,11 @@
   }
 
   .summary-card {
-    @apply bg-gradient-to-r from-isa-500 to-isa-600 text-white p-6 rounded-lg text-center;
+    @apply bg-gradient-to-r from-slate-600 to-slate-700 text-white p-6 rounded-lg text-center shadow-lg border border-slate-500;
   }
 
   .summary-card-optimal {
-    @apply bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-6 rounded-lg text-center;
+    @apply bg-gradient-to-r from-isa-800 to-isa-600 text-white p-6 rounded-lg text-center shadow-lg border border-isa-400;
   }
 
   .preset-button {
@@ -49,11 +49,11 @@
   }
 
   .tab-button {
-    @apply px-6 py-3 bg-white rounded-lg font-medium transition-all duration-200 hover:bg-gray-100;
+    @apply px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-atmosphere-600;
   }
 
   .tab-button-active {
-    @apply px-6 py-3 bg-isa-500 text-white rounded-lg font-medium;
+    @apply px-4 py-2 bg-atmosphere-700 text-white rounded-lg font-medium;
   }
 
   .error-message {
@@ -130,7 +130,7 @@
   }
 
   .preset-scenarios {
-    @apply bg-gray-50 p-6 rounded-lg my-6;
+    @apply border border-atmosphere-800 p-6 rounded-lg my-6;
   }
 
   .preset-grid {
@@ -170,6 +170,128 @@
 
 @media (max-width: 480px) {
   .tooltip-trigger::after {
-    @apply w-3.5 h-3.5 text-[10px] leading-3.5;
+    @apply w-3.5 h-3.5 text-[10px];
+    line-height: 0.875rem;
   }
+}
+
+/* Additional custom classes for visualization */
+.custom-tooltip {
+  @apply bg-gray-800 text-white p-3 rounded-lg text-sm shadow-lg border border-gray-600;
+}
+
+/* Optimization Results Styling */
+.optimization-summary {
+  @apply mb-8;
+}
+
+.optimization-summary h3 {
+  @apply text-2xl font-bold text-gray-50 mb-6;
+}
+
+.summary-grid {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-6 mb-8;
+}
+
+.comparison-table {
+  @apply mb-8 overflow-x-auto;
+}
+
+.comparison-table h4 {
+  @apply text-lg font-semibold text-gray-200 mb-4;
+}
+
+.comparison-table table {
+  @apply w-full bg-atmosphere-800 rounded-lg overflow-hidden shadow-lg;
+}
+
+.comparison-table th {
+  @apply bg-atmosphere-700 text-gray-200 px-4 py-3 text-left font-semibold text-sm;
+}
+
+.comparison-table td {
+  @apply px-4 py-3 text-gray-300 border-t border-atmosphere-700;
+}
+
+.comparison-table .success {
+  @apply text-emerald-400 font-semibold;
+}
+
+.comparison-table .warning {
+  @apply text-yellow-400 font-semibold;
+}
+
+.insights {
+  @apply bg-slate-800 border border-slate-700 rounded-lg p-6 mb-8;
+}
+
+.insights h4 {
+  @apply text-lg font-semibold text-gray-200 mb-4;
+}
+
+.insights .insight {
+  @apply text-gray-300 mb-2 leading-relaxed;
+}
+
+.chart-container {
+  @apply bg-atmosphere-800 rounded-lg p-6 border border-atmosphere-700;
+}
+
+.chart-container h4 {
+  @apply text-lg font-semibold text-gray-200;
+}
+
+.export-button {
+  @apply bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200;
+}
+
+.results {
+  @apply mt-8;
+}
+
+.big-number {
+  @apply text-3xl font-bold mb-2;
+}
+
+.small-text {
+  @apply text-sm opacity-90;
+}
+
+.error-over {
+  @apply text-red-300 font-semibold;
+}
+
+.error-under {
+  @apply text-blue-300 font-semibold;
+}
+
+
+/* Help Popup Styles */
+.help-popup-trigger {
+  @apply inline-flex items-center gap-1 cursor-pointer text-isa-600 font-semibold border-none bg-transparent p-0 hover:text-isa-700 transition-colors duration-200;
+}
+
+
+.help-popup-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4;
+}
+
+.help-popup-content {
+  @apply bg-atmosphere-900 rounded-lg shadow-xl max-w-lg w-full max-h-96 overflow-hidden;
+}
+
+.help-popup-header {
+  @apply flex items-center justify-between p-4 border-b border-gray-800 ;
+}
+
+.help-popup-title {
+  @apply text-lg font-semibold text-white m-0;
+}
+
+.help-popup-close {
+  @apply text-white hover:text-gray-700 border-none bg-transparent text-xl font-bold cursor-pointer p-1 rounded hover:bg-gray-100 transition-colors duration-200;
+}
+
+.help-popup-body {
+  @apply p-4 text-white text-sm font-normal leading-relaxed overflow-y-auto max-h-80;
 }

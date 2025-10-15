@@ -199,3 +199,4 @@ The application includes educational validation through:
 Preferred communication: Simple, everyday language suitable for educational contexts.
 
 The platform emphasizes learning through exploration and visual understanding rather than complex mathematical derivations.
+- the correct command to launch the backend is uv run .\server.py

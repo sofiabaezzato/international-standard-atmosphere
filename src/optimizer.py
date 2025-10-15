@@ -57,12 +57,12 @@ class ScaleHeightOptimizer:
         }
     
     @staticmethod
-    def analyze_optimization(h_min, h_max):
+    def analyze_optimization(h_min, h_max, num_chart_points=50):
         """Detailed analysis of optimization results"""
         opt_results = ScaleHeightOptimizer.optimize_beta(h_min, h_max)
         optimal_beta = opt_results['optimal_beta']
         
-        test_altitudes = [h_min, (h_min + h_max) / 2, h_max]
+        test_altitudes = np.linspace(h_min, h_max, num_chart_points)
         comparisons = []
         
         for h in test_altitudes:

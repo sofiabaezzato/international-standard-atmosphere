@@ -13,7 +13,7 @@ export default function Tutorial() {
   if (!tutorials) return <div>Loading tutorials...</div>
 
   return (
-    <div className="card">
+    <div>
       <h2 className="text-3xl font-bold text-gray-800 mb-6">Learn About Atmospheric Modeling</h2>
       
       <div className="bg-gray-50 p-6 rounded-lg mb-8">

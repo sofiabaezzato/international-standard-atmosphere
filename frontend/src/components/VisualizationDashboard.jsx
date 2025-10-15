@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import axios from 'axios'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, ZAxis, Cell } from 'recharts'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDownload, faCircle, faInfoCircle, faChartArea, faChartLine, faBullseye, faLightbulb } from '@fortawesome/free-solid-svg-icons'
+import HelpPopup from './HelpPopup'
 
 export default function VisualizationDashboard() {
   const [minAlt, setMinAlt] = useState('0')
@@ -83,7 +86,7 @@ export default function VisualizationDashboard() {
         if (Math.abs(error) < 50) {
           points.push({
             beta,
-            altitude: alt / 1000, // Convert to km for display
+            altitude: alt, // Already in km from backend
             error: error,
             color: error
           })
@@ -169,63 +172,125 @@ export default function VisualizationDashboard() {
   }
 
   return (
-    <div className="section">
-      <h2>Visualization Dashboard</h2>
-      <p>Explore how error changes with scale height (β) and altitude</p>
+    <div className="card">
+      <h2 className="text-3xl font-bold text-gray-50 mb-2 flex items-center">
+        Visualization Dashboard
+        <HelpPopup 
+          content={
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold text-white mb-2">Understanding the Visualizations</h4>
+                <p className="mb-3">This dashboard helps you explore the complex relationship between atmospheric models through interactive visualizations.</p>
+              </div>
+              
+              <div>
+                <h5 className="font-semibold text-white mb-2 flex items-center">
+                  <FontAwesomeIcon icon={faChartArea} className="mr-2 text-isa-400" /> Error Heatmap Analysis:
+                </h5>
+                <ul className="list-disc list-inside space-y-1 text-sm">
+                  <li><span className="font-medium">Color Coding:</span> Red areas show where the exponential model overestimates pressure, blue areas show underestimation</li>
+                  <li><span className="font-medium">Sweet Spots:</span> Look for white/light areas - these represent optimal β values for specific altitudes</li>
+                  <li><span className="font-medium">Patterns:</span> You'll notice diagonal bands showing how optimal β changes with altitude ranges</li>
+                  <li><span className="font-medium">Insights:</span> Different atmospheric layers require different scale heights for best accuracy</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h5 className="font-semibold text-white mb-2 flex items-center">
+                  <FontAwesomeIcon icon={faChartLine} className="mr-2 text-isa-400" /> Model Comparison Charts:
+                </h5>
+                <ul className="list-disc list-inside space-y-1 text-sm">
+                  <li><span className="font-medium">Pressure Profiles:</span> Compare ISA (blue) vs. exponential models on logarithmic scale</li>
+                  <li><span className="font-medium">Error Analysis:</span> Green line shows optimized β performance, red shows standard β=8000m</li>
+                  <li><span className="font-medium">Key Observations:</span> Errors typically increase with altitude and vary by atmospheric layer</li>
+                  <li><span className="font-medium">Practical Use:</span> Helps determine when simple exponential models are sufficient vs. when ISA is needed</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h5 className="font-semibold text-white mb-2 flex items-center">
+                  <FontAwesomeIcon icon={faBullseye} className="mr-2 text-isa-400" /> What to Learn:
+                </h5>
+                <ul className="list-disc list-inside space-y-1 text-sm">
+                  <li>How atmospheric complexity varies with altitude</li>
+                  <li>When simple models work well vs. when precision is needed</li>
+                  <li>The trade-offs between model simplicity and accuracy</li>
+                  <li>How to choose appropriate models for different applications</li>
+                </ul>
+              </div>
+              
+              <div className="bg-blue-900 bg-opacity-30 p-3 rounded">
+                <p className="text-sm"><span className="font-medium flex items-center"><FontAwesomeIcon icon={faLightbulb} className="mr-2 text-yellow-400" /> Pro Tip:</span> Try different altitude ranges (troposphere vs. stratosphere) to see how atmospheric layers affect model accuracy. Export the data to analyze patterns in your preferred tools!</p>
+              </div>
+            </div>
+          }
+          title="Visualization Dashboard Guide"
+        >
+          <FontAwesomeIcon icon={faInfoCircle} className="text-isa-600 ml-2" size="2xs" />
+        </HelpPopup>
+      </h2>
+      <p className="text-gray-400 mb-6">Explore how error changes with scale height (β) and altitude</p>
       
-      <div className="input-row">
-        <div className="input-group">
-          <label>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-200 mb-2">
             Min Altitude (m):
-            <input 
-              type="number" 
-              value={minAlt}
-              onChange={(e) => {
-                setMinAlt(e.target.value)
-                if (error) setError(null)
-              }}
-              placeholder="e.g., 0"
-              min="0"
-              max="85000"
-            />
           </label>
+          <input 
+            type="number" 
+            value={minAlt}
+            onChange={(e) => {
+              setMinAlt(e.target.value)
+              if (error) setError(null)
+            }}
+            placeholder="e.g., 0"
+            min="0"
+            max="85000"
+            className="input-field"
+          />
         </div>
-        <div className="input-group">
-          <label>
+        <div>
+          <label className="block text-sm font-semibold text-gray-200 mb-2">
             Max Altitude (m):
-            <input 
-              type="number" 
-              value={maxAlt}
-              onChange={(e) => {
-                setMaxAlt(e.target.value)
-                if (error) setError(null)
-              }}
-              placeholder="e.g., 20000"
-              min="1000"
-              max="86000"
-            />
           </label>
+          <input 
+            type="number" 
+            value={maxAlt}
+            onChange={(e) => {
+              setMaxAlt(e.target.value)
+              if (error) setError(null)
+            }}
+            placeholder="e.g., 20000"
+            min="1000"
+            max="86000"
+            className="input-field"
+          />
         </div>
-        <div className="input-group">
-          <label>
+        <div>
+          <label className="block text-sm font-semibold text-gray-200 mb-2">
             Optimal β (m):
-            <input 
-              type="number" 
-              value={optimalBeta}
-              onChange={(e) => {
-                setOptimalBeta(e.target.value)
-                if (error) setError(null)
-              }}
-              placeholder="e.g., 7500"
-              min="1000"
-              max="20000"
-            />
           </label>
+          <input 
+            type="number" 
+            value={optimalBeta}
+            onChange={(e) => {
+              setOptimalBeta(e.target.value)
+              if (error) setError(null)
+            }}
+            placeholder="e.g., 7500"
+            min="1000"
+            max="20000"
+            className="input-field"
+          />
         </div>
       </div>
 
-      <div className="button-row">
-        <button onClick={generateHeatmap} disabled={loading}>
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <button 
+          onClick={generateHeatmap} 
+          disabled={loading}
+          className="btn-primary flex-1"
+        >
           {loading ? (
             <div className="loading-spinner">
               <div className="spinner"></div>
@@ -233,7 +298,11 @@ export default function VisualizationDashboard() {
             </div>
           ) : 'Generate Error Heatmap'}
         </button>
-        <button onClick={generateComparison} disabled={loading}>
+        <button 
+          onClick={generateComparison} 
+          disabled={loading}
+          className="btn-primary flex-1"
+        >
           {loading ? (
             <div className="loading-spinner">
               <div className="spinner"></div>
@@ -243,21 +312,21 @@ export default function VisualizationDashboard() {
         </button>
       </div>
 
-      {error && <div className="error">{error}</div>}
+      {error && <div className="error-message">{error}</div>}
 
       {heatmapData && (
-        <div className="chart-section">
+        <div className="mt-8">
           <div className="chart-header">
-            <h3>Error Landscape (β vs Altitude)</h3>
+            <h3 className="text-2xl font-bold text-gray-50">Error Landscape (β vs Altitude)</h3>
             <button 
-              className="export-button"
+              className="btn-export"
               onClick={exportHeatmapData}
               title="Export heatmap data as CSV"
             >
-              📊 Export CSV
+              <FontAwesomeIcon icon={faDownload} className="mr-2" />Export CSV
             </button>
           </div>
-          <p className="chart-description">
+          <p className="text-gray-400 mb-4">
             This shows how pressure error varies with different scale heights and altitudes. 
             Red = overestimate, Blue = underestimate
           </p>
@@ -288,7 +357,8 @@ export default function VisualizationDashboard() {
                         <p><strong>Altitude:</strong> {data.altitude.toFixed(1)} km</p>
                         <p><strong>Error:</strong> {data.error.toFixed(1)}%</p>
                         <p className={data.error > 0 ? 'error-over' : 'error-under'}>
-                          {data.error > 0 ? '🔴 Overestimate' : '🔵 Underestimate'}
+                          <FontAwesomeIcon icon={faCircle} className={data.error > 0 ? 'text-red-400 mr-2' : 'text-blue-400 mr-2'} />
+                          {data.error > 0 ? 'Overestimate' : 'Underestimate'}
                         </p>
                       </div>
                     )
@@ -307,50 +377,116 @@ export default function VisualizationDashboard() {
       )}
 
       {comparisonData && (
-        <div className="chart-section">
+        <div className="mt-8">
           <div className="chart-header">
-            <h3>Model Comparison</h3>
+            <h3 className="text-2xl font-bold text-gray-50">Model Comparison</h3>
             <button 
-              className="export-button"
+              className="btn-export"
               onClick={exportComparisonData}
               title="Export comparison data as CSV"
             >
-              📊 Export CSV
+              <FontAwesomeIcon icon={faDownload} className="mr-2" />Export CSV
             </button>
           </div>
           
-          <div className="charts-grid">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
             <div>
-              <h4>Pressure Profiles</h4>
+              <h4 className="text-lg font-semibold text-gray-200 mb-4">Pressure Profiles</h4>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={comparisonData.isa}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="altitude_km" label={{ value: 'Altitude (km)', position: 'bottom' }} />
-                  <YAxis scale="log" domain={['auto', 'auto']} label={{ value: 'Pressure (Pa)', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="pressure" data={comparisonData.isa} stroke="#3b82f6" name="ISA" strokeWidth={2} />
-                  <Line type="monotone" dataKey="pressure" data={comparisonData.exponential_optimal} stroke="#22c55e" name={`Exp (β=${comparisonData.optimal_beta.toFixed(0)}m)`} strokeWidth={2} strokeDasharray="5 5" />
-                  <Line type="monotone" dataKey="pressure" data={comparisonData.exponential_standard} stroke="#ef4444" name="Exp (β=8000m)" strokeWidth={2} strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="1 1" stroke="#374151" strokeOpacity={0.3} />
+                  <XAxis 
+                    dataKey="altitude_km" 
+                    label={{ value: 'Altitude (km)', position: 'insideBottom', offset: -10 }}
+                    type="number"
+                    domain={['dataMin', 'dataMax']}
+                    tickFormatter={(value) => value.toFixed(0)}
+                  />
+                  <YAxis 
+                    scale="log" 
+                    domain={['dataMin', 'dataMax']} 
+                    label={{ value: 'Pressure (hPa)', angle: -90, position: 'insideLeft' }}
+                    tickFormatter={(value) => (value / 100).toFixed(0)}
+                  />
+                  <Tooltip 
+                    formatter={(value, name) => [(value / 100).toFixed(1) + ' hPa', name]}
+                    labelFormatter={(value) => `Altitude: ${value.toFixed(1)} km`}
+                  />
+                  <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                  <Line 
+                    type="monotone" 
+                    dataKey="pressure" 
+                    data={comparisonData.isa} 
+                    stroke="#3b82f6" 
+                    name="ISA" 
+                    strokeWidth={1.5} 
+                    dot={false}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="pressure" 
+                    data={comparisonData.exponential_optimal} 
+                    stroke="#10b981" 
+                    name={`Exponential (β=${comparisonData.optimal_beta.toFixed(0)}m)`} 
+                    strokeWidth={1.5} 
+                    strokeDasharray="4 2" 
+                    dot={false}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="pressure" 
+                    data={comparisonData.exponential_standard} 
+                    stroke="#ef4444" 
+                    name="Exponential (β=8000m)" 
+                    strokeWidth={1.5} 
+                    strokeDasharray="2 2" 
+                    dot={false}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
 
             <div>
-              <h4>Pressure Error vs ISA</h4>
+              <h4 className="text-lg font-semibold text-gray-200 mb-4">Pressure Error vs ISA</h4>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={comparisonData.isa.map((d, i) => ({
                   altitude_km: d.altitude_km,
                   optimal: comparisonData.errors_optimal[i],
                   standard: comparisonData.errors_standard[i]
                 }))}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="altitude_km" label={{ value: 'Altitude (km)', position: 'bottom' }} />
-                  <YAxis label={{ value: 'Error (%)', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="optimal" stroke="#22c55e" name="Optimal β" strokeWidth={2} />
-                  <Line type="monotone" dataKey="standard" stroke="#ef4444" name="Standard β=8000m" strokeWidth={2} />
+                  <CartesianGrid strokeDasharray="1 1" stroke="#374151" strokeOpacity={0.3} />
+                  <XAxis 
+                    dataKey="altitude_km" 
+                    label={{ value: 'Altitude (km)', position: 'insideBottom', offset: -10 }}
+                    type="number"
+                    domain={['dataMin', 'dataMax']}
+                    tickFormatter={(value) => value.toFixed(0)}
+                  />
+                  <YAxis 
+                    label={{ value: 'Error (%)', angle: -90, position: 'insideLeft' }}
+                    tickFormatter={(value) => value.toFixed(1)}
+                  />
+                  <Tooltip 
+                    formatter={(value, name) => [value.toFixed(2) + '%', name]}
+                    labelFormatter={(value) => `Altitude: ${value.toFixed(1)} km`}
+                  />
+                  <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                  <Line 
+                    type="monotone" 
+                    dataKey="optimal" 
+                    stroke="#10b981" 
+                    name="Optimized β" 
+                    strokeWidth={1.5} 
+                    dot={false}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="standard" 
+                    stroke="#ef4444" 
+                    name="Standard β=8000m" 
+                    strokeWidth={1.5} 
+                    dot={false}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
