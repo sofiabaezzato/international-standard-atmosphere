@@ -86,6 +86,22 @@ Optimal β values vary by altitude range:
 
 Single exponential model cannot match ISA accuracy across all altitudes.
 
+### Scale Height Discrepancies
+
+**Program vs Academic Results:**
+- Program (0-11km): β ≈ 7766m 
+- Academic MATLAB: β ≈ 9281m
+
+**Root Cause - ISA Implementation:**
+- **Program**: Full 8-layer ISA (ISO 2533:1975 standard)
+- **Academic**: Single-layer troposphere formula: P/P₀ = (1+λh/T₀)^(-g₀/Rλ)
+
+**Optimization Method:**
+- **Program**: L-BFGS-B minimizes sum squared errors (continuous)
+- **Academic**: Grid search minimizes RMS error (discrete β = 1,2,3...11000m)
+
+Different ISA models → different pressure profiles → different optimal β values.
+
 ## Dependencies
 
 Backend: FastAPI, NumPy, SciPy, Matplotlib

@@ -204,7 +204,7 @@ class EducationalInterface:
             diff_from_standard = optimal_beta - 8000
             if abs(diff_from_standard) < 500:
                 print(f"  💡 Your optimal β is very close to the standard value (difference: {diff_from_standard:+.0f}m).")
-                print("     This means β = 8,000m is a good approximation for your altitude range!")
+                print(f"     This means β = {ExponentialAtmosphere.STANDARD_SCALE_HEIGHT}m is a good approximation for your altitude range!")
             elif diff_from_standard > 0:
                 print(f"  💡 Your optimal β is {diff_from_standard:.0f}m HIGHER than standard.")
                 print("     Using β = 8,000m would UNDERESTIMATE pressures in your range.")

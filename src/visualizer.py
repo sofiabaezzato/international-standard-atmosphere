@@ -1,7 +1,62 @@
+"""
+Atmospheric Model Visualization and Data Processing
+
+This module provides comprehensive visualization tools for atmospheric modeling
+analysis. It implements advanced plotting techniques, mathematical interpolation,
+and data processing algorithms to create publication-quality scientific
+visualizations of atmospheric properties and model comparisons.
+
+Visualization Capabilities:
+1. 2D Error Heatmaps: Contour plots showing model accuracy across parameter space
+2. Multi-Model Comparisons: Side-by-side analysis of ISA vs exponential models
+3. Sensitivity Analysis: Parameter influence on model accuracy
+4. Statistical Visualizations: Error distributions and performance metrics
+
+Mathematical Framework:
+The visualizer employs several mathematical techniques:
+- Bilinear interpolation for smooth contour generation
+- Logarithmic scaling for pressure/density data spanning orders of magnitude
+- Color mapping algorithms for intuitive data representation
+- Statistical analysis for error characterization
+
+Data Processing Pipeline:
+1. Sample Generation: Create high-resolution datasets for smooth plotting
+2. Model Evaluation: Calculate atmospheric properties using multiple models
+3. Error Analysis: Compute relative and absolute errors between models
+4. Interpolation: Generate smooth surfaces from discrete data points
+5. Rendering: Apply color maps, contours, and annotations for clarity
+
+Color Scheme Design:
+- Blue-White-Red (RdBu_r): Intuitive diverging colormap for errors
+- Blue tones: ISA reference data (authoritative standard)
+- Green tones: Optimized models (improved performance)
+- Red tones: Standard models (baseline comparison)
+- Yellow/Orange: Constants and reference lines
+
+Plot Quality Standards:
+- High DPI (150) for crisp publication-quality output
+- Bold fonts and clear labels for readability
+- Grid lines with transparency for visual guidance
+- Legends positioned to avoid data obscuration
+- Tight layout optimization for efficient space usage
+
+File I/O Operations:
+- PNG format for web compatibility and quality
+- Descriptive filenames encoding plot parameters
+- Automatic file closure for memory management
+- Bbox_inches='tight' for optimal figure boundaries
+
+Performance Considerations:
+- Agg backend for headless server compatibility
+- Memory-efficient array operations using NumPy
+- Vectorized calculations for high-resolution datasets
+- Figure closure after saving to prevent memory leaks
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg')  # Use non-interactive backend for server compatibility
 
 try:
     from .isa_calculator import ISACalculator
@@ -13,48 +68,133 @@ except ImportError:
     from optimizer import ScaleHeightOptimizer
 
 class AtmosphereVisualizer:
-    """Visualization tools for atmospheric models"""
+    """
+    Advanced Visualization Engine for Atmospheric Models
+    
+    This class provides sophisticated plotting and data visualization capabilities
+    for atmospheric modeling applications. It implements publication-quality
+    scientific visualization techniques with emphasis on clarity, accuracy,
+    and professional presentation standards.
+    
+    The visualizer supports multiple plot types, automatic color selection,
+    mathematical interpolation, and comprehensive error analysis visualization.
+    All plots are optimized for both digital display and print publication.
+    """
     
     @staticmethod
     def plot_error_heatmap(h_min, h_max, beta_min=5000, beta_max=12000, optimal_beta=None):
-        """Create 2D heatmap showing error vs beta and altitude"""
+        """
+        Generate 2D error heatmap showing exponential model accuracy across parameter space.
+        
+        This function creates a comprehensive visualization of how exponential atmosphere
+        model errors vary with both scale height (β) and altitude. The resulting contour
+        plot reveals optimal parameter regions and quantifies model accuracy trade-offs.
+        
+        Mathematical Visualization:
+        The heatmap displays the error surface E(h,β) where:
+        E(h,β) = [P₀×exp(-h/β) - P_ISA(h)] / P_ISA(h) × 100%
+        
+        Visualization Techniques:
+        1. Filled contours (contourf) for smooth color gradients
+        2. Zero-error contour lines for optimal β identification
+        3. Diverging colormap (RdBu_r) for intuitive error interpretation
+        4. Overlay lines showing standard and optimal β values
+        5. Altitude scaling to km for readability
+        
+        Color Interpretation:
+        - Blue regions: Exponential model under-predicts pressure (negative error)
+        - White regions: Minimal error between models
+        - Red regions: Exponential model over-predicts pressure (positive error)
+        - Black contour: Zero error line (perfect exponential match)
+        
+        Args:
+            h_min (float): Minimum altitude for analysis [m]
+            h_max (float): Maximum altitude for analysis [m]
+            beta_min (float): Minimum scale height for parameter sweep [m]
+            beta_max (float): Maximum scale height for parameter sweep [m]
+            optimal_beta (float, optional): Optimal β to highlight [m]
+            
+        Returns:
+            str: Filename of saved heatmap image
+        """
+        # Generate high-resolution error grid for smooth visualization
         betas, altitudes, errors = ExponentialAtmosphere.generate_error_grid(
             (beta_min, beta_max), (h_min, h_max), num_beta=100, num_alt=100
         )
         
+        # Create figure with professional sizing for publication quality
         plt.figure(figsize=(12, 8))
         
+        # Define error levels for contour generation (-50% to +50% range)
+        # 21 levels provide smooth gradients without over-discretization
         levels = np.linspace(-50, 50, 21)
+        
+        # Generate filled contour plot with diverging colormap
+        # RdBu_r (reversed Red-Blue) provides intuitive error interpretation
         contour = plt.contourf(betas, altitudes/1000, errors, levels=levels, cmap='RdBu_r')
         plt.colorbar(contour, label='Pressure Error (%)')
         
+        # Add zero-error contour lines for optimal β identification
+        # Black lines clearly show regions of minimal model error
         contour_lines = plt.contour(betas, altitudes/1000, errors, levels=[0], colors='black', linewidths=2)
         plt.clabel(contour_lines, inline=True, fontsize=10, fmt='0% error')
         
+        # Highlight optimal β value if provided (from optimization results)
         if optimal_beta:
             plt.axvline(x=optimal_beta, color='lime', linewidth=3, linestyle='--', 
                        label=f'Optimal β = {optimal_beta:.0f} m')
         
+        # Show standard β reference line for comparison
         plt.axvline(x=8000, color='yellow', linewidth=2, linestyle=':', 
                    label='Standard β = 8000 m')
         
+        # Professional axis labeling with bold fonts for readability
         plt.xlabel('Scale Height β (meters)', fontsize=12, fontweight='bold')
         plt.ylabel('Altitude (km)', fontsize=12, fontweight='bold')
         plt.title(f'Exponential Model Error Landscape\nAltitude Range: {h_min/1000:.0f}-{h_max/1000:.0f} km', 
                  fontsize=14, fontweight='bold')
         plt.legend(loc='upper right', fontsize=11)
-        plt.grid(True, alpha=0.3)
+        plt.grid(True, alpha=0.3)  # Subtle grid for visual guidance
         
+        # Optimize layout and save with high quality
         plt.tight_layout()
         filename = f'error_heatmap_{h_min}_{h_max}.png'
         plt.savefig(filename, dpi=150, bbox_inches='tight')
-        plt.close()
+        plt.close()  # Free memory immediately
         
         return filename
     
     @staticmethod
     def plot_model_comparison(h_min, h_max, optimal_beta, num_points=200):
-        """Create side-by-side comparison of all models"""
+        """
+        Generate comprehensive multi-panel comparison of atmospheric models.
+        
+        This function creates a sophisticated 2x2 subplot layout comparing ISA,
+        optimized exponential, and standard exponential models across multiple
+        atmospheric properties. The visualization enables detailed analysis of
+        model accuracy, limitations, and performance trade-offs.
+        
+        Panel Layout:
+        1. Top-left: Pressure profiles (log scale for wide dynamic range)
+        2. Top-right: Pressure errors vs altitude (percentage deviations)
+        3. Bottom-left: Temperature profiles (highlighting isothermal assumption)
+        4. Bottom-right: Density profiles (log scale for exponential decay)
+        
+        Data Processing:
+        - High-resolution sampling (200 points default) for smooth curves
+        - Logarithmic scaling for pressure/density spanning orders of magnitude
+        - Error calculations using percentage formulation for scale independence
+        - Color coding consistent across all panels for model identification
+        
+        Args:
+            h_min (float): Minimum altitude [m]
+            h_max (float): Maximum altitude [m]  
+            optimal_beta (float): Optimized scale height parameter [m]
+            num_points (int): Resolution for curve generation (default: 200)
+            
+        Returns:
+            str: Filename of saved comparison plot
+        """
         altitudes = np.linspace(h_min, h_max, num_points)
         
         isa_pressures = []
