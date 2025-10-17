@@ -211,7 +211,15 @@ export default function OptimizationExplorer() {
                 <p className="small-text">Best fit for {results.optimization.altitude_range_km[0]}-{results.optimization.altitude_range_km[1]} km</p>
               </div>
               <div className="summary-card">
-                <h4>RMSE</h4>
+                <h4>
+                  RMSE
+                  <HelpPopup 
+                    content="RMSE stands for Root Mean Square Error. It measures the average magnitude of errors between the exponential and ISA models across all altitude points. Lower RMSE values indicate better fit. It's calculated as the square root of the average squared differences between predicted and actual values."
+                    title="Root Mean Square Error (RMSE)"
+                  >
+                    <FontAwesomeIcon icon={faInfoCircle} className="text-white ml-2" size="xs"/>
+                  </HelpPopup>
+                </h4>
                 <p className="big-number">{results.optimization.rmse_percentage.toFixed(2)}%</p>
                 <p className="small-text">Average error with optimal β</p>
               </div>
