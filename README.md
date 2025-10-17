@@ -6,6 +6,9 @@ Educational platform for atmospheric modeling. Implements ISA model and compares
 
 Calculates atmospheric parameters using International Standard Atmosphere (ISO 2533:1975) and optimizes exponential model parameters for different altitude ranges.
 
+### NOTE: Web Interface (Cloud)
+**Backend is deployed on free tier cloud server. Shuts down after inactivity. First API call may fail - be patient and retry after few seconds.**
+
 ## Data Sources and Calculations
 
 ### ISA Model
