@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import api from '../services/api.js'
 
 export default function Tutorial() {
   const [tutorials, setTutorials] = useState(null)
 
   useEffect(() => {
-    axios.get('/api/tutorial')
+    api.get('/api/tutorial')
       .then(response => setTutorials(response.data))
       .catch(err => console.error(err))
   }, [])

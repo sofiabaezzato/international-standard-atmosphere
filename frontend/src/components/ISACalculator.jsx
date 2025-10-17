@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import axios from 'axios'
+import api from '../services/api.js'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faInfoCircle, faCheck, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import HelpPopup from './HelpPopup'
@@ -44,7 +44,7 @@ export default function ISACalculator() {
     setError(null)
     
     try {
-      const response = await axios.post('/api/isa/calculate', {
+      const response = await api.post('/api/isa/calculate', {
         altitude: parseFloat(altitude)
       })
       setResults(response.data)

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import axios from 'axios'
+import api from '../services/api.js'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faInfoCircle, faDownload, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
@@ -45,7 +45,7 @@ export default function OptimizationExplorer() {
     setError(null)
     
     try {
-      const response = await axios.post('/api/optimize', {
+      const response = await api.post('/api/optimize', {
         min_altitude: parseFloat(minAlt),
         max_altitude: parseFloat(maxAlt)
       })

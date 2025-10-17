@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import axios from 'axios'
+import api from '../services/api.js'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, ZAxis, Cell } from 'recharts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload, faCircle, faInfoCircle, faChartArea, faChartLine, faBullseye, faLightbulb } from '@fortawesome/free-solid-svg-icons'
@@ -39,7 +39,7 @@ export default function VisualizationDashboard() {
     setLoading(true)
     setError(null)
     try {
-      const response = await axios.post('/api/visualize/heatmap', {
+      const response = await api.post('/api/visualize/heatmap', {
         min_altitude: parseFloat(minAlt),
         max_altitude: parseFloat(maxAlt),
         num_beta: 30,
@@ -63,7 +63,7 @@ export default function VisualizationDashboard() {
     setLoading(true)
     setError(null)
     try {
-      const response = await axios.post('/api/visualize/comparison', {
+      const response = await api.post('/api/visualize/comparison', {
         min_altitude: parseFloat(minAlt),
         max_altitude: parseFloat(maxAlt),
         optimal_beta: parseFloat(optimalBeta)

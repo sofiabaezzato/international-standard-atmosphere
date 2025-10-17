@@ -1,11 +1,36 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional
 import numpy as np
+import time
+from datetime import datetime
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 from src import ISACalculator, ExponentialAtmosphere, ScaleHeightOptimizer
 
 app = FastAPI(title="Atmosphere Model API", version="1.0.0")
+
+# Initialize rate limiter
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+
+# Custom rate limit exceeded handler
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    response = JSONResponse(
+        status_code=429,
+        content={
+            "error": "Rate limit exceeded", 
+            "message": "Too many requests. This is an educational API - please allow time between requests to ensure fair access for all learners.",
+            "retry_after": f"{exc.retry_after} seconds",
+            "limit": str(exc.detail).split(" ")[0] if exc.detail else "Unknown"
+        }
+    )
+    response.headers["Retry-After"] = str(exc.retry_after)
+    return response
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,7 +63,8 @@ class ComparisonRequest(BaseModel):
     num_points: Optional[int] = 200
 
 @app.get("/")
-def read_root():
+@limiter.limit("30/minute")
+def read_root(request: Request):
     return {
         "message": "Atmosphere Model Learning Tool API",
         "endpoints": {
@@ -47,11 +73,58 @@ def read_root():
             "heatmap": "/api/visualize/heatmap",
             "comparison": "/api/visualize/comparison",
             "tutorials": "/api/tutorial"
+        },
+        "rate_limits": {
+            "general": "30 requests per minute",
+            "calculations": "60 requests per minute", 
+            "visualizations": "20 requests per minute",
+            "note": "Educational use - please be considerate of other learners"
         }
     }
 
+@app.get("/healthz")
+@limiter.limit("100/minute")
+def health_check(request: Request):
+    """Health check endpoint for monitoring services like Render"""
+    try:
+        # Basic dependency check - ensure core modules are importable
+        from src import ISACalculator, ExponentialAtmosphere, ScaleHeightOptimizer
+        
+        # Simple calculation test to verify everything works
+        test_result = ISACalculator.calculate_from_geometric(1000)
+        
+        return {
+            "status": "healthy",
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "service": "Atmosphere Model API",
+            "version": "1.0.0",
+            "dependencies": {
+                "isa_calculator": "ok",
+                "exponential_models": "ok", 
+                "optimizer": "ok",
+                "numpy": "ok"
+            },
+            "test_calculation": {
+                "input_altitude_m": 1000,
+                "output_pressure_pa": round(test_result['pressure'], 2),
+                "status": "ok"
+            }
+        }
+    except Exception as e:
+        # Return unhealthy status if any core functionality fails
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "status": "unhealthy",
+                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "error": str(e),
+                "message": "Core atmospheric calculation modules are not functioning properly"
+            }
+        )
+
 @app.post("/api/isa/calculate")
-def calculate_isa(request: AltitudeRequest):
+@limiter.limit("60/minute")
+def calculate_isa(http_request: Request, request: AltitudeRequest):
     try:
         altitude = request.altitude
         
@@ -92,7 +165,8 @@ def calculate_isa(request: AltitudeRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/optimize")
-def optimize_beta(request: OptimizeRequest):
+@limiter.limit("30/minute")
+def optimize_beta(http_request: Request, request: OptimizeRequest):
     try:
         h_min = request.min_altitude
         h_max = request.max_altitude
@@ -153,7 +227,8 @@ def optimize_beta(request: OptimizeRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/visualize/heatmap")
-def generate_heatmap_data(request: HeatmapRequest):
+@limiter.limit("20/minute")
+def generate_heatmap_data(http_request: Request, request: HeatmapRequest):
     try:
         betas, altitudes, errors = ExponentialAtmosphere.generate_error_grid(
             (request.min_beta, request.max_beta),
@@ -172,7 +247,8 @@ def generate_heatmap_data(request: HeatmapRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/visualize/comparison")
-def generate_comparison_data(request: ComparisonRequest):
+@limiter.limit("20/minute")
+def generate_comparison_data(http_request: Request, request: ComparisonRequest):
     try:
         altitudes = np.linspace(request.min_altitude, request.max_altitude, request.num_points or 200)
         
@@ -229,7 +305,8 @@ def generate_comparison_data(request: ComparisonRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/tutorial")
-def get_tutorials():
+@limiter.limit("60/minute")
+def get_tutorials(request: Request):
     return {
         "exponential_model": {
             "title": "What is an Exponential Atmosphere Model?",
