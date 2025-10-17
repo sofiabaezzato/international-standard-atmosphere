@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
     postcss: './postcss.config.js',
   },
   // Base path for GitHub Pages deployment
-  base: mode === 'production' ? '/International-Standard-Atmosphere/' : '/',
+  base: mode === 'production' ? '/international-standard-atmosphere/' : '/',
   build: {
     // Ensure assets are properly referenced
     assetsDir: 'assets',
